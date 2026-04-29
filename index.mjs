@@ -18,6 +18,16 @@ const pool = mysql.createPool({
 
 
 app.get('/', (req, res) => {
+   res.render('home.ejs');
+});
+
+app.get('/search', async (req, res) => {
+   let search = req.query.search;
+   let url = "https://itunes.apple.com/search?term=" + search;
+   const response = await fetch(url);
+   const data = await response.json();
+   console.log(data);
+   res.render('searchResults.ejs', {data});
    res.render('login.ejs')
 });
 
