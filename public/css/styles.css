@@ -1,4 +1,4 @@
-* {
+html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -49,6 +49,16 @@
     text-align: center;
     padding: 15px;
     font-size: 15px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
 }
 
 @media(max-width: 730px) {

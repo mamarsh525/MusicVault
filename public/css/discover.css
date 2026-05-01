@@ -1,0 +1,130 @@
+body {
+    background: #eeeae2;
+    color: #4d4c4b;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.container {
+    max-width: 900px;
+    margin-top: 50px;
+    padding: 30px;
+    background: #dfd4c3;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.music-header {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.music-header {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+}
+
+.music-artwork {
+    flex: 0 0 220px;
+}
+
+.album-img {
+    width: 100%;
+    border-radius: 14px;
+    border: 3px solid #a07d54;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease;
+}
+
+.album-img:hover {
+    transform: scale(1.03);
+}
+
+.music-info {
+    flex: 2;
+}
+
+.list-group-item {
+    background: #eeeae2;
+    color: #4d4c4b;
+    border: none;
+    margin-bottom: 8px;
+    border-radius: 10px !important;
+    transition: 0.2s ease;
+}
+
+.list-group-item:hover {
+    background: #dfd4c3;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 768px) {
+    .music-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .music-info {
+        text-align: center;
+    }
+
+    .music-artwork {
+        flex: none;
+        width: 180px;
+    }
+}
+
+.music-top3 {
+    flex: 1;
+}
+
+.top3-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background: #eeeae2;
+    border-left: 4px solid #a07d54;
+    transition: 0.2s ease;
+}
+
+.top3-item:hover {
+    background: #dfd4c3;
+    border-left-color: #3e5974;
+}
+
+.rank {
+    font-weight: 700;
+    color: #5d5646;
+    width: 35px;
+}
+
+h1, h2, h3 {
+    color: #5d5646;
+}
+
+.music-top3 h3,
+.music-info h3 {
+    color: #3e5974;
+    margin-bottom: 12px;
+}
+
+.btn-primary {
+    background: #5d5646;
+    border: none;
+    color: #eeeae2;
+    padding: 10px 18px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #3e5974;
+    color: #eeeae2;
+}
+/* 
+that took forever */
