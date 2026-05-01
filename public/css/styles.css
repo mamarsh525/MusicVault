@@ -1,9 +1,12 @@
+
+/* general css */
 html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* footer css */
 .footer {
     background-color: #dfd4c3;
     width: 100%;
@@ -51,6 +54,7 @@ html, body {
     font-size: 15px;
 }
 
+/* also general css */
 body {
     display: flex;
     flex-direction: column;

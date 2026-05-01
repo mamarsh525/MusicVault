@@ -1,20 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Search Artist</title>
     <%- include("partials/head.ejs") %>
 </head>
+
 <body>
     <%- include("partials/nav.ejs") %>
-    search
-    <ul>
-    <% data.results.forEach(song => { %>
-        <li>
-            <%= song.trackName %> - <%= song.artistName %>
-        </li>
-    <% }) %>
-    </ul>
+        <div class="container search-container">
+            <h1>
+                Results for <span class="search-term">"<%= search %>"</span>
+            </h1>
+            <% if (data.results.length> 0) { %>
+                <div class="results-list">
+                    <% data.results.forEach(song=> { %>
+                        <a href="<%= song.trackViewUrl %>" target="_blank" class="result-link">
+                            <div class="result-item">
+                                <img src="<%= song.artworkUrl60 %>" class="result-art">
+                                <div class="result-info">
+                                    <strong>
+                                        <%= song.trackName %>
+                                    </strong>
+                                    <div class="text-muted">
+                                        <%= song.artistName %>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+                <% } else { %>
+                    <p>No results found.</p>
+                <% } %>
+        </div>
+
+        <br>
+
+        <%- include("partials/footer") %>
 </body>
+
 </html>
