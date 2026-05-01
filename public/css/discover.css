@@ -126,6 +126,15 @@ h1, h2, h3 {
 .btn-primary:hover {
     background: #2f455c;
 }
+
+.song-link {
+    text-decoration: none;
+    color: #3e5974;
+}
+
+.song-link:hover {
+    text-decoration: underline;
+}
 /* 
 that took forever */
 
