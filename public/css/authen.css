@@ -1,0 +1,36 @@
+body {
+    background-color: #eeeae2;
+}
+
+/* Page title */
+.mv-title {
+    color: #5d5646;
+}
+
+.mv-subtitle {
+    color: #4d4c4b;
+}
+
+/* Card */
+.mv-card {
+    width: 400px;
+    background-color: #dfd4c3;
+    border: none;
+}
+
+/* Primary button */
+.mv-btn {
+    background-color: #5d5646;
+    color: white;
+}
+
+/* Alert box */
+.mv-alert {
+    background-color: #3e5974;
+    color: white;
+}
+
+/* Links */
+.mv-link {
+    color: #3e5974;
+}

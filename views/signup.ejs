@@ -5,36 +5,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <%- include("partials/head.ejs") %>
 </head>
 
 <body>
-    <h1>Sign Up</h1>
 
-    <% if (typeof signupError !=='undefined' ) { %>
-        <p style="color:red;">
+<div class="text-center mb-4">
+    <h1 class="mv-title">Welcome to MusicVault</h1>
+    <p class="mv-subtitle">Create your account and start building playlists</p>
+</div>
+
+<div class="card shadow p-4 mx-auto mv-card">
+
+    <h2 class="text-center mb-4 mv-subtitle">Create Account</h2>
+
+    <form action="/signupProcess" method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" name="firstName" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="lastName" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" maxlength="16" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" maxlength="72" class="form-control" required>
+        </div>
+
+        <button class="btn w-100 mt-2 mv-btn">
+            Sign Up
+        </button>
+
+    </form>
+
+    <% if (typeof signupError !== "undefined") { %>
+        <div class="alert mt-3 mv-alert">
             <%= signupError %>
-        </p>
+        </div>
     <% } %>
 
-        <form action="/signupProcess" method="POST">
+    <p class="text-center mt-3 mv-subtitle">
+        Already have an account?
+        <a href="/login" class="mv-link">Login</a>
+    </p>
 
-            <input type="text" name="firstName" placeholder="First Name" required>
-            <br><br>
+</div>
 
-            <input type="text" name="lastName" placeholder="Last Name" required>
-            <br><br>
-
-            <input type="text" name="username" placeholder="Username" maxlength="16" required>
-            <br><br>
-
-            <input type="password" name="password" placeholder="Password" maxlength="72" required>
-            <br><br>
-
-            <button type="submit">Sign Up</button>
-
-        </form>
-
-        <a href="/login">Back to login</a>
 </body>
 
 </html>
