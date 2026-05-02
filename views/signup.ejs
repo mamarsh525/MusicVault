@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include("partials/head.ejs") %>
+</head>
+
+<body>
+
+<div class="text-center mb-4">
+    <h1 class="mv-title">Welcome to MusicVault</h1>
+    <p class="mv-subtitle">Create your account and start building playlists</p>
+</div>
+
+<div class="card shadow p-4 mx-auto mv-card">
+
+    <h2 class="text-center mb-4 mv-subtitle">Create Account</h2>
+
+    <form action="/signupProcess" method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" name="firstName" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="lastName" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" maxlength="16" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" maxlength="72" class="form-control" required>
+        </div>
+
+        <button class="btn w-100 mt-2 mv-btn">
+            Sign Up
+        </button>
+
+    </form>
+
+    <% if (typeof signupError !== "undefined") { %>
+        <div class="alert mt-3 mv-alert">
+            <%= signupError %>
+        </div>
+    <% } %>
+
+    <p class="text-center mt-3 mv-subtitle">
+        Already have an account?
+        <a href="/login" class="mv-link">Login</a>
+    </p>
+
+</div>
+
+</body>
+
+</html>

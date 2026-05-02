@@ -1,47 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> MusicVault Login Page </title>
-    <%- include("partials/head.ejs") %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> MusicVault Login Page </title>
+  <%- include("partials/head.ejs") %>
 </head>
-<body class="text-center">
-    <%- include("partials/nav.ejs") %>
 
-    <h1 class="m-5">Login</h1>
+<body>
+      <div class="text-center mb-4 mt-5">
+        <h1 class="mv-title">Welcome to MusicVault</h1>
+        <p class="mv-subtitle">Sign in to access your music</p>
+    </div>
 
-    <form action="/loginProcess" method="POST">
-      Username:
-      <div class="loginDiv">
-        <input type="text" name="username" />
-        <span class="bi bi-person loginIcon"></span>
-      </div>
-      <br />
+    <div class="card shadow p-4 mx-auto mv-card">
 
-      Password:
-      <div class="loginDiv">
-        <input type="password" id="pwd" name="password" />
-        <span class="bi bi-eye loginIcon" id="eyeIcon"></span>
-      </div>
-      <br />
-      <button class="btn btn-success">Login</button>
-    </form>
-    <% if (typeof (loginError) !== "undefined") { %>
-        <div class ="alert alert-danger m-5">
-            <%=loginError%>
-        </div>
-        
-    <% } %>
-    <script>
-      const eyeIcon = document.querySelector("#eyeIcon");
-      eyeIcon.addEventListener("click", () => {
-        const isHidden = pwd.type === "password";
-        pwd.type = isHidden ? "text" : "password";
-        eyeIcon.classList.toggle("bi-eye", !isHidden);
-        eyeIcon.classList.toggle("bi-eye-slash", isHidden);
-      });
-    </script>
-    
+        <h2 class="text-center mb-4 mv-subtitle">Login</h2>
+
+        <form action="/loginProcess" method="POST">
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <input type="text" name="username" class="form-control" required>
+                    <span class="input-group-text mv-btn" style="border:none;">
+                        <i class="bi bi-person"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" id="pwd" name="password" class="form-control" required>
+                    <span class="input-group-text mv-btn" id="eyeIcon" style="cursor:pointer; border:none;">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+            </div>
+
+            <button class="btn w-100 mt-2 mv-btn">
+                Login
+            </button>
+
+        </form>
+
+      <p class="mt-3">
+        Don't have an account? <a href="/">Sign up</a>
+      </p>
+
+      <script>
+        const eyeIcon = document.querySelector("#eyeIcon");
+        const pwd = document.querySelector("#pwd");
+
+        eyeIcon.addEventListener("click", () => {
+          const isHidden = pwd.type === "password";
+          pwd.type = isHidden ? "text" : "password";
+          eyeIcon.classList.toggle("bi-eye", !isHidden);
+          eyeIcon.classList.toggle("bi-eye-slash", isHidden);
+        });
+      </script>
+
 </body>
+
 </html>
