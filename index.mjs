@@ -1,5 +1,6 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';                                                                       
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -65,9 +66,8 @@ app.post('/loginProcess', async (req, res) => {
               FROM users
               WHERE username = ?`;
    const [rows] = await pool.query(sql, [username]);
-   let storedPassword = "";
-   if (rows.length > 0) { //username was found in the database
-      storedPassword = rows[0].password;
+   if (rows.length == 0) { //username not found in the database
+      return res.render('login.ejs', {loginError: 'No user found'});
    }
    if (rows.length === 0) {
       return res.render('login.ejs', { loginError: "User not found" });
