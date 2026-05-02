@@ -49,12 +49,10 @@
                     <div class="music-info">
                         <h3>Other Bangers</h3>
                         <ul class="list-group">
-                            <% songs.forEach(song=> { %>
+                            <% songs.slice(3).forEach(song=> { %>
                                 <li class="list-group-item">
                                     <a href="<%= song.trackViewUrl %>" target="_blank" class="song-link">
-                                        <strong>
-                                            <%= song.trackName %>
-                                        </strong>
+                                        <strong><%= song.trackName %></strong>
                                     </a>
                                     <div class="text-muted">
                                         <%= song.collectionName %>
