@@ -56,6 +56,20 @@ app.post('/loginProcess', async (req, res) => {
 });
 
 
+app.get("/discover", async (req, res) => {
+    try {
+      //subject to change 
+        const artists = ["Taylor Swift", "Drake", "The Weeknd", "Adele", "Bruno Mars", "SZA", "Billie Eilish", "Kendrick Lamar", "Doja Cat", "Lana Del Rey"];
+        const random= artists[Math.floor(Math.random() * artists.length)];
+        const response = await fetch(`https://itunes.apple.com/search?term=${random}&entity=song&limit=10`);
+        const data = await response.json();
+        res.render("discover.ejs", {artist: random, songs: data.results});
+    } catch (error) {
+        console.error(error);
+        res.send("Error discover");
+    }
+});
+
 app.listen(3000, () => {
    console.log('server started');
 });
