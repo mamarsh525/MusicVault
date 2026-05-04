@@ -47,6 +47,37 @@ app.get('/search', async (req, res) => {
    //res.render('login.ejs')
 });
 
+app.get('/playlists', async (req, res) => {
+   const userId = req.session.userId;
+
+   let sql = `SELECT *
+            FROM playlists
+            NATURAL JOIN songs
+            WHERE userId = ?`;
+   const [rows] = await pool.query(sql, [userId]);
+
+   const playlistMap = {};
+   rows.forEach(row => {
+      if (!playlistMap[row.playlistId]) {
+         playlistMap[row.playlistId] = {
+            playlistId: row.playlistId,
+            name: row.name,
+            num_songs: row.num_songs,
+            songs: []
+         };
+      }
+      playlistMap[row.playlistId].songs.push({
+         songId: row.songId,
+         title: row.title,
+         artistName: row.artistName,
+         songURL: row.songURL
+      });
+   });
+
+   const playlists = Object.values(playlistMap);
+   res.render("playlists.ejs", { playlists });
+});
+
 app.post('/signupProcess', async (req, res) => {
    let { firstName, lastName, username, password } = req.body;
 
