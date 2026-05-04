@@ -100,7 +100,7 @@ app.get("/discover", async (req, res) => {
 });
 
 app.post("/addToPlaylist", async (req, res) => {
-   const { song_id, trackName, artistName } = req.body;
+   const { song_id, trackName, artistName, songURL } = req.body;
    const userId = req.session.userId;
 
    let sql = `SELECT *
@@ -108,31 +108,62 @@ app.post("/addToPlaylist", async (req, res) => {
             WHERE userId = ?`;
    const [playlists] = await pool.query(sql, [userId]);
    if (playlists.length === 0) {
-      return res.render("createPlaylist.ejs", { song_id, trackName, artistName });
+      return res.render("createPlaylist.ejs", { song_id, trackName, artistName, songURL });
    }
-   res.render("choosePlaylist.ejs", { playlists, song_id, trackName, artistName });
+   res.render("choosePlaylist.ejs", { playlists, song_id, trackName, artistName, songURL });
 });
+app.post("/addSongToPlaylist", async (req, res) => {
+   const { playlistId, trackName, artistName, songURL } = req.body;
+
+   try {
+      await pool.query(
+         `INSERT INTO songs (title, artistName, songURL, PlaylistId)
+          VALUES (?, ?, ?, ?)`,
+         [trackName, artistName, songURL || '', playlistId]
+      );
+
+      await pool.query(
+         `UPDATE playlists
+          SET num_songs = num_songs + 1
+          WHERE playlistId = ?`,
+         [playlistId]
+      );
+
+      res.redirect("/home");
+   } catch (err) {
+      console.error(err);
+      res.render("home.ejs", { error: "Error adding song to playlist" });
+   }
+});
+
 app.post("/createPlaylist", async (req, res) => {
-   const { playlistName, song_id } = req.body;
+   const { playlistName, song_id, trackName, artistName, songURL } = req.body;
    const userId = req.session.userId;
 
-   let sql = `INSERT INTO playlists (userId, name, num_songs)
-              VALUES (?, ?, 0)`;
+   try {
+      let sql = `INSERT INTO playlists (userId, name, num_songs)
+                 VALUES (?, ?, 0)`;
 
-   const [result] = await pool.query(sql, [userId, playlistName]);
-   const playlistId = result.insertId;
-   await pool.query(
-      `INSERT INTO playlist_songs (playlistId, position, song_id)
-       VALUES (?, 1, ?)`,
-      [playlistId, song_id]
-   );
-   await pool.query(
-      `UPDATE playlists
-       SET num_songs = 1
-       WHERE playlistId = ?`,
-      [playlistId]
-   );
-   res.redirect("/home");
+      const [result] = await pool.query(sql, [userId, playlistName]);
+      const playlistId = result.insertId;
+
+      await pool.query(
+         `INSERT INTO songs (title, artistName, songURL, PlaylistId)
+          VALUES (?, ?, ?, ?)`,
+         [trackName, artistName, songURL || '', playlistId]
+      );
+
+      await pool.query(
+         `UPDATE playlists
+          SET num_songs = 1
+          WHERE playlistId = ?`,
+         [playlistId]
+      );
+      res.redirect("/home");
+   } catch (err) {
+      console.error(err);
+      res.render("createPlaylist.ejs", { song_id, trackName, artistName, error: "Error creating playlist" });
+   }
 });
 
 app.listen(3000, () => {

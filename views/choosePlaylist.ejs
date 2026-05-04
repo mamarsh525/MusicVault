@@ -16,10 +16,11 @@
                 <%= artistName %>
             </p>
             <% if (playlists.length> 0) { %>
-                <form action="/home" method="GET">
+                <form action="/addSongToPlaylist" method="POST">
                     <input type="hidden" name="song_id" value="<%= song_id %>">
                     <input type="hidden" name="trackName" value="<%= trackName %>">
                     <input type="hidden" name="artistName" value="<%= artistName %>">
+                    <input type="hidden" name="songURL" value="<%= songURL %>">
 
                     <div class="mb-3">
                         <label class="form-label">Select Playlist</label>
@@ -42,6 +43,7 @@
                         <input type="hidden" name="song_id" value="<%= song_id %>">
                         <input type="hidden" name="trackName" value="<%= trackName %>">
                         <input type="hidden" name="artistName" value="<%= artistName %>">
+                        <input type="hidden" name="songURL" value="<%= songURL %>">
                         <div class="mb-3">
                             <input type="text" name="playlistName" class="form-control" placeholder="Playlist name"
                                 required>
