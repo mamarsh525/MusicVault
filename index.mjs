@@ -215,6 +215,44 @@ app.post("/createPlaylist", async (req, res) => {
    }
 });
 
+app.post("/addToFavorites", async (req, res) => {
+   const { trackName, artistName, songURL } = req.body;
+   const userId = req.session.userId;
+   try {
+      const [existing] = await pool.query(
+         `SELECT * FROM favorites
+          WHERE userId = ? AND title = ? AND artistName = ?`,
+         [userId, trackName, artistName]
+      );
+      if (existing.length === 0) {
+         await pool.query(
+            `INSERT INTO favorites (userId, title, artistName, songURL)
+             VALUES (?, ?, ?, ?)`,
+            [userId, trackName, artistName, songURL ]
+         );
+      }
+   } catch (err) {
+      console.error(err);
+      res.render("home.ejs", { firstName: 'User', lastName: '', error: "Error adding to favorites" });
+   }
+});
+
+app.get("/favorites", async (req, res) => {
+   try {
+      const userId = req.session.userId;
+      const [favorites] = await pool.query(
+         `SELECT title, artistName, songURL
+          FROM favorites
+          WHERE userId = ?`,
+         [userId]
+      );
+      res.render("favorites.ejs", { favorites });
+   } catch (err) {
+      console.error(err);
+      res.send("Error loading favorites");
+   }
+});
+
 app.get('/artistInfo', async (req, res) => {
    const { artist } = req.query;
 
@@ -249,4 +287,5 @@ app.get('/artistInfo', async (req, res) => {
 
 app.listen(3000, () => {
    console.log('server started');
+
 });
