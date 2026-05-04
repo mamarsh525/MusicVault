@@ -32,8 +32,26 @@ app.get('/login', (req, res) => {
    res.render('login.ejs');
 });
 
-app.get('/home', (req, res) => {
-   res.render('home.ejs');
+app.get('/home', async (req, res) => {
+   const userId = req.session.userId;
+   let firstName = 'User';
+   let lastName = '';
+
+   try {
+      let sql = `SELECT firstName, lastName
+                 FROM users
+                 WHERE userId = ?`;
+      const [user] = await pool.query(sql, [userId]);
+
+      if (user.length > 0) {
+         firstName = user[0].firstName;
+         lastName = user[0].lastName;
+      }
+   } catch (err) {
+      console.error(err);
+   }
+
+   res.render('home.ejs', { firstName, lastName });
 });
 
 app.get('/search', async (req, res) => {
@@ -109,7 +127,7 @@ app.post('/loginProcess', async (req, res) => {
 
    if (password === rows[0].password) {
       req.session.userId = rows[0].userId;
-      res.render('home.ejs');
+      res.redirect('/home');
    } else {
       res.render('login.ejs', { loginError: "Incorrect password" });
    }
@@ -163,7 +181,7 @@ app.post("/addSongToPlaylist", async (req, res) => {
       res.redirect("/home");
    } catch (err) {
       console.error(err);
-      res.render("home.ejs", { error: "Error adding song to playlist" });
+      res.render("home.ejs", { firstName: 'User', lastName: '', error: "Error adding song to playlist" });
    }
 });
 
