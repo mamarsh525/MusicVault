@@ -287,6 +287,20 @@ app.get('/artistInfo', isUserAuthenticated,async (req, res) => {
    }
 });
 
+app.get("/deleteFav", isUserAuthenticated, async (req, res) => {
+   try {
+      const userId = req.session.userId;
+      const {songTitle} = req.query;
+      let sql = `DELETE FROM favorites
+               WHERE title = ? AND userId = ?`;
+      res.redirect("/favorites");
+      const [playlists] = await pool.query(sql, [songTitle, userId]);
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from favorites");
+   }
+});
+
 function isUserAuthenticated(req, res, next){
     if(req.session.authenticated){
         next();

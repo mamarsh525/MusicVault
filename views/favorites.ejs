@@ -21,7 +21,11 @@
                     <ul class="list-group">
                         <% favorites.forEach(song => { %>
                             <li class="list-group-item">
-                                <strong><%= song.title %></strong>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong><%= song.title %></strong> 
+                                    <a href="/deleteFav?songTitle=<%= song.title %>" class="btn btn-danger btn-sm">X</a>
+                                </div>
+                                
                                 <div class="text-muted">
                                     <a href="/artistInfo?artist=<%= encodeURIComponent(song.artistName) %>" style="color: inherit; text-decoration: none;">
                                         <%= song.artistName %>
@@ -31,7 +35,7 @@
                                     <audio controls style="width: 100%; margin-top: 10px;">
                                         <source src="<%= song.songURL %>" type="audio/aac">
                                     </audio>
-                                <% } %>
+                                <% } %> 
                             </li>
                         <% }) %>
                     </ul>
