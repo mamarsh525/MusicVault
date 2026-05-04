@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <%- include("partials/head") %>
 </head>
 
 <body>
+    <%- include("partials/nav") %>
     <h2>Create Your Playlist</h2>
 
     <form action="/createPlaylist" method="POST">
@@ -19,6 +21,7 @@
 
         <button type="submit">Create </button>
     </form>
+    <%- include("partials/footer") %>
 </body>
 
 </html>
