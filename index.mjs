@@ -330,6 +330,10 @@ app.get("/deletePlaylist", isUserAuthenticated, async (req,res) => {
    try {
       const userId = req.session.userId;
       const {playlistId} = req.query;   
+
+      let sql2 = `DELETE FROM songs WHERE playlistId = ?`;
+      await pool.query(sql2, [playlistId]);
+
       let sql3 = `DELETE FROM playlists WHERE playlistId = ? AND userId = ?`;
       await pool.query(sql3, [playlistId, userId]);
 
