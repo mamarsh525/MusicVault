@@ -1,6 +1,6 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
-import bcrypt from 'bcrypt';                                                                       
+import bcrypt from 'bcrypt';
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -67,7 +67,7 @@ app.post('/loginProcess', async (req, res) => {
               WHERE username = ?`;
    const [rows] = await pool.query(sql, [username]);
    if (rows.length == 0) { //username not found in the database
-      return res.render('login.ejs', {loginError: 'No user found'});
+      return res.render('login.ejs', { loginError: 'No user found' });
    }
    if (rows.length === 0) {
       return res.render('login.ejs', { loginError: "User not found" });
@@ -93,6 +93,47 @@ app.get("/discover", async (req, res) => {
       console.error(error);
       res.send("Error discover");
    }
+});
+
+app.post("/addToPlaylist", async (req, res) => {
+   const { song_id, trackName, artistName } = req.body;
+   let userId= `SELECT userId 
+            FROM users 
+            WHERE userId = ?`;
+   //console.log(userId);
+
+   let sql = `SELECT * 
+            FROM playlists 
+            WHERE userId = ?`;
+   const [playlists] = await pool.query(sql, [userId]);
+   if (playlists.length === 0) {
+      return res.render("createPlaylist.ejs", { song_id, trackName, artistName });
+   }
+   res.render("choosePlaylist.ejs", { playlists, song_id, trackName, artistName });
+});
+app.post("/createPlaylist", async (req, res) => {
+   const { playlistName, song_id } = req.body;
+   let userId= `SELECT userId 
+            FROM users 
+            WHERE userId = ?`;
+
+   let sql = `INSERT INTO playlists (userId, name, num_songs)
+              VALUES (?, ?, 0)`;
+
+   const [result] = await pool.query(sql, [userId, playlistName]);
+   const playlistId = result.insertId;
+   await pool.query(
+      `INSERT INTO playlist_songs (playlistId, position, song_id)
+       VALUES (?, 1, ?)`,
+      [playlistId, song_id]
+   );
+   await pool.query(
+      `UPDATE playlists
+       SET num_songs = 1
+       WHERE playlistId = ?`,
+      [playlistId]
+   );
+   res.redirect("/home");
 });
 
 app.listen(3000, () => {

@@ -28,18 +28,26 @@
                                         <%= song.artistName %>
                                     </div>
                                 </div>
-                            </div>
                         </a>
-                    <% }) %>
+                        <form action="/addToPlaylist" method="POST" class="ms-3">
+                            <input type="hidden" name="song_id" value="<%= song.trackId %>">
+                            <input type="hidden" name="trackName" value="<%= song.trackName %>">
+                            <input type="hidden" name="artistName" value="<%= song.artistName %>">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                +
+                            </button>
+                        </form>
                 </div>
-                <% } else { %>
-                    <p>No results found.</p>
-                <% } %>
+                <% }) %>
         </div>
+        <% } else { %>
+            <p>No results found.</p>
+            <% } %>
+                </div>
 
-        <br>
+                <br>
 
-        <%- include("partials/footer") %>
+                <%- include("partials/footer") %>
 </body>
 
 </html>

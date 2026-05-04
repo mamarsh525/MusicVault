@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Playlist</title>
+    <%- include("partials/head.ejs") %>
+</head>
+
+<body>
+
+    <%- include("partials/nav.ejs") %>
+        <div class="container mt-5">
+            <h2>Add "<%= trackName %>" to a Playlist</h2>
+            <p class="text-muted">
+                <%= artistName %>
+            </p>
+            <% if (playlists.length> 0) { %>
+                <form action="/home" method="GET">
+                    <input type="hidden" name="song_id" value="<%= song_id %>">
+                    <input type="hidden" name="trackName" value="<%= trackName %>">
+                    <input type="hidden" name="artistName" value="<%= artistName %>">
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Playlist</label>
+                        <select name="playlistId" class="form-select" required>
+                            <% playlists.forEach(p=> { %>
+                                <option value="<%= p.playlistId %>">
+                                    <%= p.name %> (<%= p.num_songs %>)
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        Add to Playlist
+                    </button>
+                </form>
+
+                <% } else { %>
+                    <p>You don’t have any playlists yet.</p>
+                    <form action="/createPlaylist" method="POST">
+                        <input type="hidden" name="song_id" value="<%= song_id %>">
+                        <input type="hidden" name="trackName" value="<%= trackName %>">
+                        <input type="hidden" name="artistName" value="<%= artistName %>">
+                        <div class="mb-3">
+                            <input type="text" name="playlistName" class="form-control" placeholder="Playlist name"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Create Playlist
+                        </button>
+                    </form>
+                    <% } %>
+        </div>
+        <%- include("partials/footer") %>
+
+</body>
+
+</html>
