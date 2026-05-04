@@ -1,6 +1,7 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
-import bcrypt from 'bcrypt';                                                                       
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -17,6 +18,11 @@ const pool = mysql.createPool({
    waitForConnections: true
 });
 
+app.use(session({
+   secret: 'your-secret-key',
+   resave: false,
+   saveUninitialized: true
+}));
 
 app.get('/', (req, res) => {
    res.render('signup.ejs');
@@ -37,7 +43,7 @@ app.get('/search', async (req, res) => {
    const response = await fetch(url);
    const data = await response.json();
    console.log(data);
-   res.render('searchResults.ejs', { data, search });
+   res.render('searchResults.ejs', { data, search, userId: '' });
    //res.render('login.ejs')
 });
 
@@ -67,13 +73,11 @@ app.post('/loginProcess', async (req, res) => {
               WHERE username = ?`;
    const [rows] = await pool.query(sql, [username]);
    if (rows.length == 0) { //username not found in the database
-      return res.render('login.ejs', {loginError: 'No user found'});
-   }
-   if (rows.length === 0) {
-      return res.render('login.ejs', { loginError: "User not found" });
+      return res.render('login.ejs', { loginError: 'No user found' });
    }
 
    if (password === rows[0].password) {
+      req.session.userId = rows[0].userId;
       res.render('home.ejs');
    } else {
       res.render('login.ejs', { loginError: "Incorrect password" });
@@ -92,6 +96,73 @@ app.get("/discover", async (req, res) => {
    } catch (error) {
       console.error(error);
       res.send("Error discover");
+   }
+});
+
+app.post("/addToPlaylist", async (req, res) => {
+   const { song_id, trackName, artistName, songURL } = req.body;
+   const userId = req.session.userId;
+
+   let sql = `SELECT *
+            FROM playlists
+            WHERE userId = ?`;
+   const [playlists] = await pool.query(sql, [userId]);
+   if (playlists.length === 0) {
+      return res.render("createPlaylist.ejs", { song_id, trackName, artistName, songURL });
+   }
+   res.render("choosePlaylist.ejs", { playlists, song_id, trackName, artistName, songURL });
+});
+app.post("/addSongToPlaylist", async (req, res) => {
+   const { playlistId, trackName, artistName, songURL } = req.body;
+
+   try {
+      await pool.query(
+         `INSERT INTO songs (title, artistName, songURL, PlaylistId)
+          VALUES (?, ?, ?, ?)`,
+         [trackName, artistName, songURL || '', playlistId]
+      );
+
+      await pool.query(
+         `UPDATE playlists
+          SET num_songs = num_songs + 1
+          WHERE playlistId = ?`,
+         [playlistId]
+      );
+
+      res.redirect("/home");
+   } catch (err) {
+      console.error(err);
+      res.render("home.ejs", { error: "Error adding song to playlist" });
+   }
+});
+
+app.post("/createPlaylist", async (req, res) => {
+   const { playlistName, song_id, trackName, artistName, songURL } = req.body;
+   const userId = req.session.userId;
+
+   try {
+      let sql = `INSERT INTO playlists (userId, name, num_songs)
+                 VALUES (?, ?, 0)`;
+
+      const [result] = await pool.query(sql, [userId, playlistName]);
+      const playlistId = result.insertId;
+
+      await pool.query(
+         `INSERT INTO songs (title, artistName, songURL, PlaylistId)
+          VALUES (?, ?, ?, ?)`,
+         [trackName, artistName, songURL || '', playlistId]
+      );
+
+      await pool.query(
+         `UPDATE playlists
+          SET num_songs = 1
+          WHERE playlistId = ?`,
+         [playlistId]
+      );
+      res.redirect("/home");
+   } catch (err) {
+      console.error(err);
+      res.render("createPlaylist.ejs", { song_id, trackName, artistName, error: "Error creating playlist" });
    }
 });
 
