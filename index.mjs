@@ -47,6 +47,37 @@ app.get('/search', async (req, res) => {
    //res.render('login.ejs')
 });
 
+app.get('/playlists', async (req, res) => {
+   const userId = req.session.userId;
+
+   let sql = `SELECT *
+            FROM playlists
+            NATURAL JOIN songs
+            WHERE userId = ?`;
+   const [rows] = await pool.query(sql, [userId]);
+
+   const playlistMap = {};
+   rows.forEach(row => {
+      if (!playlistMap[row.playlistId]) {
+         playlistMap[row.playlistId] = {
+            playlistId: row.playlistId,
+            name: row.name,
+            num_songs: row.num_songs,
+            songs: []
+         };
+      }
+      playlistMap[row.playlistId].songs.push({
+         songId: row.songId,
+         title: row.title,
+         artistName: row.artistName,
+         songURL: row.songURL
+      });
+   });
+
+   const playlists = Object.values(playlistMap);
+   res.render("playlists.ejs", { playlists });
+});
+
 app.post('/signupProcess', async (req, res) => {
    let { firstName, lastName, username, password } = req.body;
 
@@ -202,6 +233,36 @@ app.get("/favorites", async (req, res) => {
    } catch (err) {
       console.error(err);
       res.send("Error loading favorites");
+     
+app.get('/artistInfo', async (req, res) => {
+   const { artist } = req.query;
+
+   if (!artist) {
+      return res.render('artistInfo.ejs', { artist: null, artistInfo: null, error: 'No artist name provided' });
+   }
+
+   try {
+      const url = `https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(artist)}&fmt=json&inc=tags+ratings+url-rels`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(url, {
+         headers: { 'User-Agent': 'MusicPlaylistApp/1.0 (contact@example.com)' },
+         signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+      const data = await response.json();
+
+      if (!data.artists || data.artists.length === 0) {
+         return res.render('artistInfo.ejs', { artist, artistInfo: null, error: 'Artist not found' });
+      }
+
+      const artistInfo = data.artists[0];
+      res.render('artistInfo.ejs', { artist, artistInfo, error: null });
+   } catch (err) {
+      console.error('MusicBrainz connection failed:', err.message);
+      res.render('artistInfo.ejs', { artist, artistInfo: null, error: 'Unable to connect to MusicBrainz. Please try again.' });
    }
 });
 

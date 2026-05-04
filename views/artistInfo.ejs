@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= artist %> - Artist Info</title>
+    <%- include("partials/head.ejs") %>
+</head>
+
+<body>
+    <%- include("partials/nav.ejs") %>
+    <div class="container mt-5">
+        <% if (error) { %>
+            <div class="alert alert-warning" role="alert">
+                <%= error %>
+            </div>
+            <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+        <% } else if (artistInfo) { %>
+            <div class="card">
+                <div class="card-body">
+                    <h1><%= artistInfo.name %></h1>
+
+                    <% if (artistInfo['type-id']) { %>
+                        <p><strong>Type:</strong> <%= artistInfo.type %></p>
+                    <% } %>
+
+                    <% if (artistInfo.country) { %>
+                        <p><strong>Country:</strong> <%= artistInfo.country %></p>
+                    <% } %>
+
+                    <% if (artistInfo['life-span']) { %>
+                        <p><strong>Active:</strong>
+                            <%= artistInfo['life-span'].begin %>
+                            <% if (artistInfo['life-span'].end) { %>
+                                - <%= artistInfo['life-span'].end %>
+                            <% } else { %>
+                                - Present
+                            <% } %>
+                        </p>
+                    <% } %>
+
+                    <% if (artistInfo.disambiguation) { %>
+                        <p><strong>Notes:</strong> <%= artistInfo.disambiguation %></p>
+                    <% } %>
+
+                    <% if (artistInfo.tags && artistInfo.tags.length > 0) { %>
+                        <p><strong>Tags/Genres:</strong>
+                            <% artistInfo.tags.slice(0, 10).forEach((tag, index) => { %>
+                                <span class="badge bg-secondary"><%= tag.name %></span>
+                                <% if (index < 9 && index < artistInfo.tags.length - 1) { %><% } %>
+                            <% }) %>
+                        </p>
+                    <% } %>
+
+                    <% if (artistInfo.rating) { %>
+                        <p><strong>Rating:</strong> <%= artistInfo.rating.value %>/5 (<%= artistInfo.rating['votes-count'] %> votes)</p>
+                    <% } %>
+
+                    <% if (artistInfo.relations && artistInfo.relations.length > 0) { %>
+                        <p><strong>Links:</strong></p>
+                        <div>
+                            <% const wikiLink = artistInfo.relations.find(r => r.type === 'wikipedia'); %>
+                            <% const officialWebsite = artistInfo.relations.find(r => r.type === 'official website'); %>
+                            <% const socialNetwork = artistInfo.relations.find(r => r.type === 'social network'); %>
+
+                            <% if (wikiLink) { %>
+                                <a href="<%= wikiLink.url.resource %>" target="_blank" class="btn btn-sm btn-info">Wikipedia</a>
+                            <% } %>
+                            <% if (officialWebsite) { %>
+                                <a href="<%= officialWebsite.url.resource %>" target="_blank" class="btn btn-sm btn-primary">Official Website</a>
+                            <% } %>
+                            <% if (socialNetwork) { %>
+                                <a href="<%= socialNetwork.url.resource %>" target="_blank" class="btn btn-sm btn-secondary">Social Media</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <hr>
+                    <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <br>
+
+    <%- include("partials/footer") %>
+</body>
+
+</html>

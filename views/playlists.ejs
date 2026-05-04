@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playlists</title>
+    <%- include("partials/head.ejs") %>
+</head>
+
+<body>
+    <%- include("partials/nav.ejs") %>
+    <div class="container mt-5">
+        <h1>My Playlists</h1>
+        <% if (playlists.length > 0) { %>
+            <% playlists.forEach(playlist => { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><%= playlist.name %></h3>
+                        <p class="text-muted"><%= playlist.num_songs %> songs</p>
+                    </div>
+                    <div class="card-body">
+                        <% if (playlist.songs.length > 0) { %>
+                            <ul class="list-group">
+                                <% playlist.songs.forEach(song => { %>
+                                    <li class="list-group-item">
+                                        <strong><%= song.title %></strong>
+                                        <div class="text-muted">
+                                            <a href="/artistInfo?artist=<%= encodeURIComponent(song.artistName) %>" style="color: inherit; text-decoration: none;">
+                                                <%= song.artistName %>
+                                            </a>
+                                        </div>
+                                        <% if (song.songURL) { %>
+                                            <audio controls style="width: 100%; margin-top: 10px;">
+                                                <source src="<%= song.songURL %>" type="audio/mp4">
+                                            </audio>
+                                        <% } %>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No playlists found. <a href="/discover">Start creating!</a></p>
+        <% } %>
+    </div>
+
+    <br>
+
+    <%- include("partials/footer") %>
+</body>
+
+</html>
