@@ -4,34 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Favorites</title>
+    <title>My Favorites</title>
     <%- include("partials/head.ejs") %>
 </head>
+
 <body>
     <%- include("partials/nav.ejs") %>
-    <h3>Your Favorites</h3>
-
-    <% if (favorites.length===0) { %>
-        <p>No favorites yet.</p>
+    <div class="container mt-5">
+        <h1>My Favorites</h1>
+        <% if (favorites.length > 0) { %>
+            <div class="card">
+                <div class="card-header">
+                    <p class="text-muted"><%= favorites.length %> songs</p>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <% favorites.forEach(song => { %>
+                            <li class="list-group-item">
+                                <strong><%= song.title %></strong>
+                                <div class="text-muted">
+                                    <a href="/artistInfo?artist=<%= encodeURIComponent(song.artistName) %>" style="color: inherit; text-decoration: none;">
+                                        <%= song.artistName %>
+                                    </a>
+                                </div>
+                                <% if (song.songURL) { %>
+                                    <audio controls style="width: 100%; margin-top: 10px;">
+                                        <source src="<%= song.songURL %>" type="audio/aac">
+                                    </audio>
+                                <% } %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
         <% } else { %>
-            <ul class="list-group mb-4">
-                <% favorites.forEach(song=> { %>
+            <p>No favorites found. <a href="/discover">Start discovering!</a></p>
+        <% } %>
+    </div>
 
-                    <li class="list-group-item">
-                        <strong>
-                            <%= song.title %>
-                        </strong>
-                        <div class="text-muted">
-                            <%= song.artistName %>
-                        </div>
-                        <% if (song.songURL) { %>
-                            <a href="<%= song.songURL %>" target="_blank">Preview</a>
-                            <% } %>
-                    </li>
-                    <% }) %>
-            </ul>
-            <% } %>
-            <%- include("partials/footer") %>
+    <br>
+
+    <%- include("partials/footer") %>
 </body>
 
 </html>

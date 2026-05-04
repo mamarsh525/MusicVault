@@ -213,10 +213,9 @@ app.post("/addToFavorites", async (req, res) => {
             [userId, trackName, artistName, songURL ]
          );
       }
-
    } catch (err) {
       console.error(err);
-      res.render("home.ejs", { error: "Error adding to favorites" });
+      res.render("home.ejs", { firstName: 'User', lastName: '', error: "Error adding to favorites" });
    }
 });
 
@@ -233,7 +232,9 @@ app.get("/favorites", async (req, res) => {
    } catch (err) {
       console.error(err);
       res.send("Error loading favorites");
-     
+   }
+});
+
 app.get('/artistInfo', async (req, res) => {
    const { artist } = req.query;
 
