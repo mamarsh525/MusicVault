@@ -293,11 +293,50 @@ app.get("/deleteFav", isUserAuthenticated, async (req, res) => {
       const {songTitle} = req.query;
       let sql = `DELETE FROM favorites
                WHERE title = ? AND userId = ?`;
+      await pool.query(sql, [songTitle, userId]);
       res.redirect("/favorites");
-      const [playlists] = await pool.query(sql, [songTitle, userId]);
    } catch (err) {
       console.error(err);
       res.send("Error deleting from favorites");
+   }
+});
+
+app.get("/deleteSong", isUserAuthenticated, async (req,res) => {
+   try {
+      const userId = req.session.userId;
+      const {songTitle, playlistId} = req.query;
+      let sql = `DELETE FROM songs
+               WHERE title = ? AND playlistId = ?`;
+      const[result] = await pool.query(sql, [songTitle, playlistId]);
+
+      if(result.affectedRows > 0){
+         let sql2 = `UPDATE playlists
+                     SET num_songs = num_songs - 1
+                     WHERE playlistId = ? AND userId = ?`;
+         await pool.query(sql2, [playlistId, userId]);
+      }
+         
+      let sql3 = `DELETE FROM playlists WHERE playlistId = ? AND userId = ? AND num_songs = 0`;
+      await pool.query(sql3, [playlistId, userId]);
+
+      res.redirect("/playlists");
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from playlist");
+   }
+});
+
+app.get("/deletePlaylist", isUserAuthenticated, async (req,res) => {
+   try {
+      const userId = req.session.userId;
+      const {playlistId} = req.query;   
+      let sql3 = `DELETE FROM playlists WHERE playlistId = ? AND userId = ?`;
+      await pool.query(sql3, [playlistId, userId]);
+
+      res.redirect("/playlists");
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from playlist");
    }
 });
 
