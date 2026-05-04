@@ -25,7 +25,11 @@
                                 <% playlist.songs.forEach(song => { %>
                                     <li class="list-group-item">
                                         <strong><%= song.title %></strong>
-                                        <div class="text-muted"><%= song.artistName %></div>
+                                        <div class="text-muted">
+                                            <a href="/artistInfo?artist=<%= encodeURIComponent(song.artistName) %>" style="color: inherit; text-decoration: none;">
+                                                <%= song.artistName %>
+                                            </a>
+                                        </div>
                                         <% if (song.songURL) { %>
                                             <audio controls style="width: 100%; margin-top: 10px;">
                                                 <source src="<%= song.songURL %>" type="audio/mp4">
