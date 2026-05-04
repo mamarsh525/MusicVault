@@ -9,10 +9,11 @@
 <body>
    
     <%- include("partials/nav.ejs") %>
-    <!-- <form action="/search" method="GET">
-        <input type="text" name="search" id="search">
-        <button> Search </button>
-    </form> -->
+
+    <div class="card-title text-center mt-5 mb-5">
+        <h1 class="display-4">Welcome <%= firstName %> <%= lastName %></h1>
+        <img src="/img/bank_vault_PNG9.png" alt="Vault" style="max-width: 300px; margin-top: 20px;">
+    </div>
 
     <%- include("partials/footer.ejs") %>
 
