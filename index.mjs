@@ -18,6 +18,7 @@ const pool = mysql.createPool({
    waitForConnections: true
 });
 
+app.set('trust proxy', 1)
 app.use(session({
    secret: 'your-secret-key',
    resave: false,
@@ -32,7 +33,7 @@ app.get('/login', (req, res) => {
    res.render('login.ejs');
 });
 
-app.get('/home', async (req, res) => {
+app.get('/home', isUserAuthenticated,async (req, res) => {
    const userId = req.session.userId;
    let firstName = 'User';
    let lastName = '';
@@ -54,7 +55,7 @@ app.get('/home', async (req, res) => {
    res.render('home.ejs', { firstName, lastName });
 });
 
-app.get('/search', async (req, res) => {
+app.get('/search', isUserAuthenticated,async (req, res) => {
    let search = req.query.search;
    let url = "https://itunes.apple.com/search?term="
       + encodeURIComponent(search) + "&entity=song&media=music&limit=20";
@@ -65,7 +66,7 @@ app.get('/search', async (req, res) => {
    //res.render('login.ejs')
 });
 
-app.get('/playlists', async (req, res) => {
+app.get('/playlists', isUserAuthenticated, async (req, res) => {
    const userId = req.session.userId;
 
    let sql = `SELECT *
@@ -126,6 +127,7 @@ app.post('/loginProcess', async (req, res) => {
    }
 
    if (password === rows[0].password) {
+      req.session.authenticated = true;
       req.session.userId = rows[0].userId;
       res.redirect('/home');
    } else {
@@ -134,7 +136,7 @@ app.post('/loginProcess', async (req, res) => {
 });
 
 
-app.get("/discover", async (req, res) => {
+app.get("/discover", isUserAuthenticated,async (req, res) => {
    try {
       //subject to change 
       const artists = ["Taylor Swift", "Drake", "The Weeknd", "Adele", "Bruno Mars", "SZA", "Billie Eilish", "Kendrick Lamar", "Doja Cat", "Lana Del Rey"];
@@ -148,7 +150,7 @@ app.get("/discover", async (req, res) => {
    }
 });
 
-app.post("/addToPlaylist", async (req, res) => {
+app.post("/addToPlaylist", isUserAuthenticated,async (req, res) => {
    const { song_id, trackName, artistName, songURL } = req.body;
    const userId = req.session.userId;
 
@@ -185,7 +187,7 @@ app.post("/addSongToPlaylist", async (req, res) => {
    }
 });
 
-app.post("/createPlaylist", async (req, res) => {
+app.post("/createPlaylist", isUserAuthenticated,async (req, res) => {
    const { playlistName, song_id, trackName, artistName, songURL } = req.body;
    const userId = req.session.userId;
 
@@ -215,7 +217,7 @@ app.post("/createPlaylist", async (req, res) => {
    }
 });
 
-app.post("/addToFavorites", async (req, res) => {
+app.post("/addToFavorites", isUserAuthenticated,async (req, res) => {
    const { trackName, artistName, songURL } = req.body;
    const userId = req.session.userId;
    try {
@@ -237,7 +239,7 @@ app.post("/addToFavorites", async (req, res) => {
    }
 });
 
-app.get("/favorites", async (req, res) => {
+app.get("/favorites", isUserAuthenticated, async (req, res) => {
    try {
       const userId = req.session.userId;
       const [favorites] = await pool.query(
@@ -253,7 +255,7 @@ app.get("/favorites", async (req, res) => {
    }
 });
 
-app.get('/artistInfo', async (req, res) => {
+app.get('/artistInfo', isUserAuthenticated,async (req, res) => {
    const { artist } = req.query;
 
    if (!artist) {
@@ -283,6 +285,77 @@ app.get('/artistInfo', async (req, res) => {
       console.error('MusicBrainz connection failed:', err.message);
       res.render('artistInfo.ejs', { artist, artistInfo: null, error: 'Unable to connect to MusicBrainz. Please try again.' });
    }
+});
+
+app.get("/deleteFav", isUserAuthenticated, async (req, res) => {
+   try {
+      const userId = req.session.userId;
+      const {songTitle} = req.query;
+      let sql = `DELETE FROM favorites
+               WHERE title = ? AND userId = ?`;
+      await pool.query(sql, [songTitle, userId]);
+      res.redirect("/favorites");
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from favorites");
+   }
+});
+
+app.get("/deleteSong", isUserAuthenticated, async (req,res) => {
+   try {
+      const userId = req.session.userId;
+      const {songTitle, playlistId} = req.query;
+      let sql = `DELETE FROM songs
+               WHERE title = ? AND playlistId = ?`;
+      const[result] = await pool.query(sql, [songTitle, playlistId]);
+
+      if(result.affectedRows > 0){
+         let sql2 = `UPDATE playlists
+                     SET num_songs = num_songs - 1
+                     WHERE playlistId = ? AND userId = ?`;
+         await pool.query(sql2, [playlistId, userId]);
+      }
+         
+      let sql3 = `DELETE FROM playlists WHERE playlistId = ? AND userId = ? AND num_songs = 0`;
+      await pool.query(sql3, [playlistId, userId]);
+
+      res.redirect("/playlists");
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from playlist");
+   }
+});
+
+app.get("/deletePlaylist", isUserAuthenticated, async (req,res) => {
+   try {
+      const userId = req.session.userId;
+      const {playlistId} = req.query;   
+
+      let sql2 = `DELETE FROM songs WHERE playlistId = ?`;
+      await pool.query(sql2, [playlistId]);
+
+      let sql3 = `DELETE FROM playlists WHERE playlistId = ? AND userId = ?`;
+      await pool.query(sql3, [playlistId, userId]);
+
+      res.redirect("/playlists");
+   } catch (err) {
+      console.error(err);
+      res.send("Error deleting from playlist");
+   }
+});
+
+function isUserAuthenticated(req, res, next){
+    if(req.session.authenticated){
+        next();
+    }
+    else{
+        res.redirect("/")
+    }
+}
+
+app.get('/logout', (req, res) => {
+   req.session.destroy();
+   res.redirect('/')
 });
 
 app.listen(3000, () => {

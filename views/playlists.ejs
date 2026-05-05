@@ -24,7 +24,10 @@
                             <ul class="list-group">
                                 <% playlist.songs.forEach(song => { %>
                                     <li class="list-group-item">
-                                        <strong><%= song.title %></strong>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong><%= song.title %></strong> 
+                                            <a href="/deleteSong?songTitle=<%= song.title %>&playlistId=<%= playlist.playlistId%>" class="btn btn-danger btn-sm">X</a>
+                                        </div>
                                         <div class="text-muted">
                                             <a href="/artistInfo?artist=<%= encodeURIComponent(song.artistName) %>" style="color: inherit; text-decoration: none;">
                                                 <%= song.artistName %>
@@ -39,6 +42,7 @@
                                 <% }) %>
                             </ul>
                         <% } %>
+                        <a href="/deletePlaylist?playlistId=<%= playlist.playlistId%>" class="btn btn-outline-danger btn-sm">Delete Playlist</a>
                     </div>
                 </div>
             <% }) %>
@@ -50,6 +54,8 @@
     <br>
 
     <%- include("partials/footer") %>
+
+
 </body>
 
 </html>
